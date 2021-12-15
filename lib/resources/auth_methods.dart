@@ -2,11 +2,58 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthMethods {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // to know if there is user logged in or not and then using it in FutureBuilder
-  Future<User> getCurrentUser() async {
-    User currentUser = FirebaseAuth.instance.currentUser!;
-    print(currentUser);
-    return currentUser;
+  // Signing Up User
+  
+  Future<String> signUpUser({
+    required String email,
+    required String password,
+    required String username,
+  }) async {
+    String res = "Some error Occurred";
+    try {
+      if (email.isNotEmpty || password.isNotEmpty || username.isNotEmpty) {
+        // registering user in auth with email and password 
+        UserCredential cred = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        // adding user in our database
+        await _firestore.collection("users").doc(cred.user!.uid).set({
+          "email": email,
+          "username": username,
+        });
+        res = "success";
+      } else {
+        res = "Please enter all the fields";
+      }
+    } catch (err) {
+      return err.toString();
+    }
+    return res;
+  }
+
+  Future<String> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    String res = "Some error Occurred";
+    try {
+      if (email.isNotEmpty || password.isNotEmpty) {
+        // logging in user with email and password 
+        await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        res = "success";
+      } else {
+        res = "Please enter all the fields";
+      }
+    } catch (err) {
+      return err.toString();
+    }
+    return res;
   }
 }
