@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/global_variable.dart';
 
@@ -11,7 +12,7 @@ class MobileScreenLayout extends StatefulWidget {
 }
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
-  int _page = 0;
+  int _page = 2;
   late PageController pageController; // for tabs animation
 
   @override
@@ -40,6 +41,24 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: mobileBackgroundColor,
+        centerTitle: false,
+        title: SvgPicture.asset(
+          'assets/ic_instagram.svg',
+          color: primaryColor,
+          height: 32,
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.messenger_outline,
+              color: primaryColor,
+            ),
+            onPressed: () {},
+          ),
+        ],
+      ),
       body: PageView(
         children: homeScreenItems,
         controller: pageController,
@@ -51,40 +70,40 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           BottomNavigationBarItem(
             icon: Icon(
               Icons.home,
-              color: (_page == 0) ? Colors.white : Colors.grey,
+              color: (_page == 0) ? primaryColor : secondaryColor,
             ),
             label: '',
-            backgroundColor: Colors.white,
+            backgroundColor: primaryColor,
           ),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.search,
-                color: (_page == 1) ? Colors.white : Colors.grey,
+                color: (_page == 1) ? primaryColor : secondaryColor,
               ),
               label: '',
-              backgroundColor: Colors.white),
+              backgroundColor: primaryColor),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.add_circle,
-                color: (_page == 2) ? Colors.white : Colors.grey,
+                color: (_page == 2) ? primaryColor : secondaryColor,
               ),
               label: '',
-              backgroundColor: Colors.white),
+              backgroundColor: primaryColor),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.star,
-              color: (_page == 3) ? Colors.white : Colors.grey,
+              Icons.favorite,
+              color: (_page == 3) ? primaryColor : secondaryColor,
             ),
             label: '',
-            backgroundColor: Colors.white,
+            backgroundColor: primaryColor,
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: (_page == 4) ? Colors.white : Colors.grey,
+              color: (_page == 4) ? primaryColor : secondaryColor,
             ),
             label: '',
-            backgroundColor: Colors.white,
+            backgroundColor: primaryColor,
           ),
         ],
         onTap: navigationTapped,
