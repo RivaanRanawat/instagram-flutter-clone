@@ -29,10 +29,10 @@ class _PostCardState extends State<PostCard> {
   @override
   void initState() {
     super.initState();
-    fetchComments();
+    fetchCommentLen();
   }
 
-  fetchComments() async {
+  fetchCommentLen() async {
     try {
       QuerySnapshot snap = await FirebaseFirestore.instance
           .collection('posts')
@@ -47,6 +47,17 @@ class _PostCardState extends State<PostCard> {
       );
     }
     setState(() {});
+  }
+
+  deletePost(String postId) async {
+    try {
+      await FireStoreMethods().deletePost(postId);
+    } catch (err) {
+      showSnackBar(
+        context,
+        err.toString(),
+      );
+    }
   }
 
   @override
@@ -88,38 +99,47 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
               ),
-              IconButton(
-                onPressed: () {
-                  showDialog(
-                    useRootNavigator: false,
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                        child: ListView(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shrinkWrap: true,
-                            children: [
-                              'Delete',
-                            ]
-                                .map(
-                                  (e) => InkWell(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12, horizontal: 16),
-                                      child: Text(e),
-                                    ),
-                                    onTap: () {
-                                      // delete the post
-                                    },
-                                  ),
-                                )
-                                .toList()),
-                      );
-                    },
-                  );
-                },
-                icon: const Icon(Icons.more_vert),
-              )
+              widget.snap['uid'].toString() == user.uid
+                  ? IconButton(
+                      onPressed: () {
+                        showDialog(
+                          useRootNavigator: false,
+                          context: context,
+                          builder: (context) {
+                            return Dialog(
+                              child: ListView(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  shrinkWrap: true,
+                                  children: [
+                                    'Delete',
+                                  ]
+                                      .map(
+                                        (e) => InkWell(
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12,
+                                                      horizontal: 16),
+                                              child: Text(e),
+                                            ),
+                                            onTap: () {
+                                              deletePost(
+                                                widget.snap['postId']
+                                                    .toString(),
+                                              );
+                                              // remove the dialog box
+                                              Navigator.of(context).pop();
+                                            }),
+                                      )
+                                      .toList()),
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.more_vert),
+                    )
+                  : Container(),
             ],
           ),
         ),
@@ -216,7 +236,7 @@ class _PostCardState extends State<PostCard> {
             ))
           ],
         ),
-        //DESCRIPTION
+        //DESCRIPTION AND NUMBER OF COMMENTS
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
