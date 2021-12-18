@@ -56,13 +56,19 @@ class FireStoreMethods {
   }
 
   // Post comment
-  Future<String> postComment(String postId, String text, String uid, String name, String profilePic) async {
+  Future<String> postComment(String postId, String text, String uid,
+      String name, String profilePic) async {
     String res = "Some error occurred";
     try {
       if (text.isNotEmpty) {
         // if the likes list contains the user uid, we need to remove it
         String commentId = const Uuid().v1();
-        _firestore.collection('posts').doc(postId).collection('comments').doc(commentId).set({
+        _firestore
+            .collection('posts')
+            .doc(postId)
+            .collection('comments')
+            .doc(commentId)
+            .set({
           'profilePic': profilePic,
           'name': name,
           'uid': uid,
@@ -84,11 +90,44 @@ class FireStoreMethods {
   Future<String> deletePost(String postId) async {
     String res = "Some error occurred";
     try {
-        await _firestore.collection('posts').doc(postId).delete();
-        res = 'success';
+      await _firestore.collection('posts').doc(postId).delete();
+      res = 'success';
     } catch (err) {
       res = err.toString();
     }
     return res;
+  }
+
+  // Follow user
+  Future<void> followUser(String uid, String followId) async {
+
+    try {
+      DocumentSnapshot snap = await _firestore.collection('users').doc(uid).get();
+      List following = (snap.data()! as dynamic)['following'];
+      
+      if (!following.contains(followId)) {
+        // add follow id to followers list of followed user
+        await _firestore.collection('users').doc(followId).update({
+          'followers': FieldValue.arrayUnion([uid])
+        });
+
+        // add user id to following list of user
+        await _firestore.collection('users').doc(uid).update({
+          'following': FieldValue.arrayUnion([followId])
+        });
+      } else {
+        // remove follow id to followers list of followed user
+        await _firestore.collection('users').doc(followId).update({
+          'followers': FieldValue.arrayRemove([uid])
+        });
+
+        // remove user id to following list of user
+        await _firestore.collection('users').doc(uid).update({
+          'following': FieldValue.arrayRemove([followId])
+        });
+      }
+    } catch (err) {
+      print(err.toString());
+    }
   }
 }

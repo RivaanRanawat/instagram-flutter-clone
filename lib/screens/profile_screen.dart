@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/models/user.dart' as model;
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
+import 'package:instagram_clone_flutter/resources/firestore_methods.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/widgets/follow_button.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +21,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int postsLen = 0;
   var userData = {};
   bool isLoading = false;
+  int followers = 0;
 
   @override
   void initState() {
@@ -42,6 +43,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .get();
     postsLen = snap.docs.length;
     userData = userSnap.data()!;
+    isFollowing =
+        userSnap['followers'].contains(FirebaseAuth.instance.currentUser!.uid);
+    followers = userSnap['followers'].length;
     setState(() {
       isLoading = false;
     });
@@ -90,11 +94,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     buildStatColumn("posts", postsLen),
                                     buildStatColumn(
                                       "followers",
-                                      _countFollowings(userData['followers']),
+                                      followers,
                                     ),
                                     buildStatColumn(
                                       "following",
-                                      _countFollowings(userData['following']),
+                                      userData['following'].length,
                                     ),
                                   ],
                                 ),
@@ -118,14 +122,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   backgroundColor: Colors.white,
                                                   textColor: Colors.black,
                                                   borderColor: Colors.grey,
-                                                  function: () {},
+                                                  function: () async {
+                                                    await FireStoreMethods()
+                                                        .followUser(user.uid,
+                                                            userData['uid']);
+                                                    setState(() {
+                                                      isFollowing = false;
+                                                      followers--;
+                                                    });
+                                                  },
                                                 )
                                               : FollowButton(
                                                   text: "Follow",
                                                   backgroundColor: Colors.blue,
                                                   textColor: Colors.white,
                                                   borderColor: Colors.blue,
-                                                  function: () {},
+                                                  function: () async {
+                                                    await FireStoreMethods()
+                                                        .followUser(
+                                                      user.uid,
+                                                      userData['uid'],
+                                                    );
+                                                    setState(() {
+                                                      isFollowing = true;
+                                                      followers++;
+                                                    });
+                                                  },
                                                 ),
                                     ]),
                               ],
@@ -214,19 +236,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ))
       ],
     );
-  }
-
-  int _countFollowings(Map followings) {
-    int count = 0;
-
-    void countValues(key, value) {
-      if (value) {
-        count += 1;
-      }
-    }
-
-    followings.forEach(countValues);
-
-    return count;
   }
 }
