@@ -67,11 +67,7 @@ class _SignupScreenState extends State<SignupScreen> {
         _isLoading = false;
       });
       // show the error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(res),
-        ),
-      );
+      showSnackBar(context, res);
     }
   }
 

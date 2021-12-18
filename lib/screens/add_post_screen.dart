@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -61,16 +60,19 @@ class _AddPostScreenState extends State<AddPostScreen> {
     );
   }
 
-  void postImage(String uid, String username) async {
+  void postImage(String uid, String username, String profImage) async {
     setState(() {
       isLoading = true;
     });
+    // start the loading
     try {
+      // upload to storage and db
       String res = await FireStoreMethods().uploadPost(
         _descriptionController.text,
         _file!,
         uid,
         username,
+        profImage,
       );
       if (res == "success") {
         setState(() {
@@ -81,6 +83,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
           'Posted!',
         );
         clearImage();
+      } else {
+        showSnackBar(context, res);
       }
     } catch (err) {
       setState(() {
@@ -132,7 +136,10 @@ class _AddPostScreenState extends State<AddPostScreen> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () => postImage(
-                      userProvider.getUser.uid, userProvider.getUser.username),
+                    userProvider.getUser.uid,
+                    userProvider.getUser.username,
+                    userProvider.getUser.photoUrl,
+                  ),
                   child: const Text(
                     "Post",
                     style: TextStyle(
@@ -143,6 +150,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 )
               ],
             ),
+            // POST FORM
             body: Column(
               children: <Widget>[
                 isLoading
@@ -185,7 +193,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     ),
                   ],
                 ),
-                Divider(),
+                const Divider(),
               ],
             ),
           );

@@ -36,6 +36,7 @@ dependencies:
     sdk: flutter
   flutter_svg: ^1.0.0
   image_picker: ^0.8.4+4
+  intl: ^0.17.0
   provider: ^6.0.1
   uuid: ^3.0.5
 

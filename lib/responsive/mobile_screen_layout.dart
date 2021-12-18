@@ -12,7 +12,7 @@ class MobileScreenLayout extends StatefulWidget {
 }
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
-  int _page = 2;
+  int _page = 0;
   late PageController pageController; // for tabs animation
 
   @override
@@ -41,24 +41,6 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: mobileBackgroundColor,
-        centerTitle: false,
-        title: SvgPicture.asset(
-          'assets/ic_instagram.svg',
-          color: primaryColor,
-          height: 32,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.messenger_outline,
-              color: primaryColor,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
       body: PageView(
         children: homeScreenItems,
         controller: pageController,
