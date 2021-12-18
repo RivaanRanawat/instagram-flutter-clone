@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:instagram_clone_flutter/models/user.dart' as model;
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/resources/firestore_methods.dart';
+import 'package:instagram_clone_flutter/screens/comments_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
+import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/like_animation.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -31,13 +33,19 @@ class _PostCardState extends State<PostCard> {
   }
 
   fetchComments() async {
-    commentLen = await FirebaseFirestore.instance
-        .collection('posts')
-        .doc(widget.snap['postId'])
-        .collection('comments')
-        .snapshots()
-        .length;
-
+    try {
+      QuerySnapshot snap = await FirebaseFirestore.instance
+          .collection('posts')
+          .doc(widget.snap['postId'])
+          .collection('comments')
+          .get();
+      commentLen = snap.docs.length;
+    } catch (err) {
+      showSnackBar(
+        context,
+        err.toString(),
+      );
+    }
     setState(() {});
   }
 
@@ -184,10 +192,17 @@ class _PostCardState extends State<PostCard> {
               ),
             ),
             IconButton(
-                icon: const Icon(
-                  Icons.comment_outlined,
+              icon: const Icon(
+                Icons.comment_outlined,
+              ),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CommentsScreen(
+                    postId: widget.snap['postId'].toString(),
+                  ),
                 ),
-                onPressed: () {}),
+              ),
+            ),
             IconButton(
                 icon: const Icon(
                   Icons.send,
@@ -249,7 +264,13 @@ class _PostCardState extends State<PostCard> {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 4),
                 ),
-                onTap: () {},
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CommentsScreen(
+                      postId: widget.snap['postId'].toString(),
+                    ),
+                  ),
+                ),
               ),
               Container(
                 child: Text(

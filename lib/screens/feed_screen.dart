@@ -46,7 +46,7 @@ class _FeedScreenState extends State<FeedScreen> {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (ctx, index) => PostCard(
-              snap: snapshot.data!.docs[index],
+              snap: snapshot.data!.docs[index].data(),
             ),
           );
         },
