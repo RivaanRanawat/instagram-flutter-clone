@@ -98,36 +98,34 @@ class FireStoreMethods {
     return res;
   }
 
-  // Follow user
-  Future<void> followUser(String uid, String followId) async {
-
+  Future<void> followUser(
+    String uid,
+    String followId
+  ) async {
     try {
       DocumentSnapshot snap = await _firestore.collection('users').doc(uid).get();
       List following = (snap.data()! as dynamic)['following'];
-      
-      if (!following.contains(followId)) {
-        // add follow id to followers list of followed user
-        await _firestore.collection('users').doc(followId).update({
-          'followers': FieldValue.arrayUnion([uid])
-        });
 
-        // add user id to following list of user
-        await _firestore.collection('users').doc(uid).update({
-          'following': FieldValue.arrayUnion([followId])
-        });
-      } else {
-        // remove follow id to followers list of followed user
+      if(following.contains(followId)) {
         await _firestore.collection('users').doc(followId).update({
           'followers': FieldValue.arrayRemove([uid])
         });
 
-        // remove user id to following list of user
         await _firestore.collection('users').doc(uid).update({
           'following': FieldValue.arrayRemove([followId])
         });
+      } else {
+        await _firestore.collection('users').doc(followId).update({
+          'followers': FieldValue.arrayUnion([uid])
+        });
+
+        await _firestore.collection('users').doc(uid).update({
+          'following': FieldValue.arrayUnion([followId])
+        });
       }
-    } catch (err) {
-      print(err.toString());
+
+    } catch(e) {
+      print(e.toString());
     }
   }
 }

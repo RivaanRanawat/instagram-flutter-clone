@@ -64,8 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Container(
           padding: MediaQuery.of(context).size.width > webScreenSize
               ? EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width /3,
-                )
+                  horizontal: MediaQuery.of(context).size.width / 3)
               : const EdgeInsets.symmetric(horizontal: 32),
           width: double.infinity,
           child: Column(

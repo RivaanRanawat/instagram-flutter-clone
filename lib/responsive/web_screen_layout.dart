@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/global_variable.dart';
-import 'package:instagram_clone_flutter/widgets/text_field_input.dart';
 
 class WebScreenLayout extends StatefulWidget {
   const WebScreenLayout({Key? key}) : super(key: key);
@@ -12,8 +11,8 @@ class WebScreenLayout extends StatefulWidget {
 }
 
 class _WebScreenLayoutState extends State<WebScreenLayout> {
+  int _page = 0;
   late PageController pageController; // for tabs animation
-  int _page = 0; // for tabs animation
 
   @override
   void initState() {
@@ -27,15 +26,15 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
     pageController.dispose();
   }
 
-  navigatePage(int p) {
-    //Animating Page
-    pageController.jumpToPage(p);
+  void onPageChanged(int page) {
     setState(() {
-      _page = p;
+      _page = page;
     });
   }
 
   void navigationTapped(int page) {
+    //Animating Page
+    pageController.jumpToPage(page);
     setState(() {
       _page = page;
     });
@@ -43,8 +42,6 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
@@ -60,42 +57,43 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
               Icons.home,
               color: _page == 0 ? primaryColor : secondaryColor,
             ),
-            onPressed: () => navigatePage(0),
+            onPressed: () => navigationTapped(0),
           ),
           IconButton(
             icon: Icon(
               Icons.search,
               color: _page == 1 ? primaryColor : secondaryColor,
             ),
-            onPressed: () => navigatePage(1),
+            onPressed: () => navigationTapped(1),
           ),
           IconButton(
             icon: Icon(
               Icons.add_a_photo,
               color: _page == 2 ? primaryColor : secondaryColor,
             ),
-            onPressed: () => navigatePage(2),
+            onPressed: () => navigationTapped(2),
           ),
-            IconButton(
+          IconButton(
             icon: Icon(
               Icons.favorite,
               color: _page == 3 ? primaryColor : secondaryColor,
             ),
-            onPressed: () => navigatePage(3),
+            onPressed: () => navigationTapped(3),
           ),
           IconButton(
             icon: Icon(
               Icons.person,
               color: _page == 4 ? primaryColor : secondaryColor,
             ),
-            onPressed: () => navigatePage(4),
+            onPressed: () => navigationTapped(4),
           ),
         ],
       ),
       body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
         children: homeScreenItems,
         controller: pageController,
-        onPageChanged: navigatePage,
+        onPageChanged: onPageChanged,
       ),
     );
   }
