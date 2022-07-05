@@ -38,6 +38,7 @@ class AuthMethods {
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
+          
         );
 
         String photoUrl =
@@ -57,7 +58,7 @@ class AuthMethods {
         await _firestore
             .collection("users")
             .doc(cred.user!.uid)
-            .set(_user.toJson());
+            .set(_user.toJson(),);
 
         res = "success";
       } else {
