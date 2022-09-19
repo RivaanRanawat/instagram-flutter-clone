@@ -182,11 +182,17 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 onTap: () {
-                  if (_image != null) {
-                    signUpUser();
-                  } else {
+                  if (_image == null) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text("Please select an Image")));
+                  } else if (_usernameController.text.isNotEmpty &&
+                      _emailController.text.isNotEmpty &&
+                      _passwordController.text.isNotEmpty &&
+                      _bioController.text.isNotEmpty) {
+                    signUpUser();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Fields can't be empty")));
                   }
                 },
               ),
