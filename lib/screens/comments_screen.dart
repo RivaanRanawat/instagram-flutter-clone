@@ -100,6 +100,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       hintText: 'Comment as ${user.username}',
                       border: InputBorder.none,
                     ),
+                    onSubmitted: (value) {
+                      postComment(
+                        user.uid,
+                        user.username,
+                        user.photoUrl,
+                      );
+                    },
                   ),
                 ),
               ),
