@@ -32,7 +32,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 child: const Text('Take a photo'),
                 onPressed: () async {
                   Navigator.pop(context);
-                  Uint8List file = await pickImage(ImageSource.camera);
+                  Uint8List? file = await pickImage(ImageSource.camera);
                   setState(() {
                     _file = file;
                   });
@@ -42,7 +42,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 child: const Text('Choose from Gallery'),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.gallery);
+                  Uint8List? file = await pickImage(ImageSource.gallery);
                   setState(() {
                     _file = file;
                   });
@@ -113,7 +113,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
-    return _file == null
+    return _file == null || userProvider.getUser == null
         ? Center(
             child: IconButton(
               icon: const Icon(
