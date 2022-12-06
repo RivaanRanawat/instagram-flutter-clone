@@ -31,9 +31,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   getData() async {
-    setState(() {
-      isLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
     try {
       var userSnap = await FirebaseFirestore.instance
           .collection('users')
@@ -60,9 +62,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         e.toString(),
       );
     }
-    setState(() {
-      isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
