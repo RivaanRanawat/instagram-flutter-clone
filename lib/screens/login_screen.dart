@@ -45,9 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           (route) => false);
 
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } else {
       setState(() {
         _isLoading = false;
