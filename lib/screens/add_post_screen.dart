@@ -32,20 +32,24 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 child: const Text('Take a photo'),
                 onPressed: () async {
                   Navigator.pop(context);
-                  Uint8List file = await pickImage(ImageSource.camera);
-                  setState(() {
-                    _file = file;
-                  });
+                  Uint8List? file = await pickImage(ImageSource.camera);
+                  if (file != null) {
+                    setState(() {
+                      _file = file;
+                    });
+                  }
                 }),
             SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
                 child: const Text('Choose from Gallery'),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.gallery);
-                  setState(() {
-                    _file = file;
-                  });
+                  Uint8List? file = await pickImage(ImageSource.gallery);
+                  if (file != null) {
+                    setState(() {
+                      _file = file;
+                    });
+                  }
                 }),
             SimpleDialogOption(
               padding: const EdgeInsets.all(20),
