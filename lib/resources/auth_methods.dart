@@ -25,7 +25,7 @@ class AuthMethods {
     required String password,
     required String username,
     required String bio,
-    required Uint8List file,
+    required Uint8List? file,
   }) async {
     String res = "Some error Occurred";
     try {
@@ -40,8 +40,10 @@ class AuthMethods {
           password: password,
         );
 
-        String photoUrl =
-            await StorageMethods().uploadImageToStorage('profilePics', file, false);
+        String? photoUrl = file != null
+            ? await StorageMethods()
+                .uploadImageToStorage('profilePics', file, false)
+            : null;
 
         model.User _user = model.User(
           username: username,
