@@ -17,6 +17,8 @@ class ResponsiveLayout extends StatefulWidget {
 }
 
 class _ResponsiveLayoutState extends State<ResponsiveLayout> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -27,10 +29,18 @@ class _ResponsiveLayoutState extends State<ResponsiveLayout> {
     UserProvider _userProvider =
         Provider.of<UserProvider>(context, listen: false);
     await _userProvider.refreshUser();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     return LayoutBuilder(builder: (context, constraints) {
       if (constraints.maxWidth > webScreenSize) {
         // 600 can be changed to 900 if you want to display tablet screen with mobile screen layout
