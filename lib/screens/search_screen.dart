@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:instagram_clone_flutter/screens/profile_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/global_variable.dart';
+import 'package:instagram_clone_flutter/utils/profile_avatar.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -30,7 +31,6 @@ class _SearchScreenState extends State<SearchScreen> {
               setState(() {
                 isShowUsers = true;
               });
-              print(_);
             },
           ),
         ),
@@ -45,7 +45,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   )
                   .get(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+                if (snapshot.connectionState != ConnectionState.done ||
+                    !snapshot.hasData) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
@@ -62,10 +63,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                       child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            (snapshot.data! as dynamic).docs[index]['photoUrl'],
-                          ),
+                        leading: ProfileAvatar(
+                          url: (snapshot.data! as dynamic).docs[index]
+                              ['photoUrl'],
                           radius: 16,
                         ),
                         title: Text(

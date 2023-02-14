@@ -8,7 +8,6 @@ import 'package:instagram_clone_flutter/responsive/responsive_layout.dart';
 import 'package:instagram_clone_flutter/responsive/web_screen_layout.dart';
 import 'package:instagram_clone_flutter/screens/login_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
-import 'package:instagram_clone_flutter/utils/global_variable.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/text_field_input.dart';
 
@@ -36,6 +35,11 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void signUpUser() async {
+    if (_usernameController.text == "") {
+      showSnackBar(context, "Enter a username");
+      return;
+    }
+
     // set loading to true
     setState(() {
       _isLoading = true;
@@ -201,7 +205,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.of(context).push(
+                    onTap: () => Navigator.of(context).pop(
                       MaterialPageRoute(
                         builder: (context) => const LoginScreen(),
                       ),

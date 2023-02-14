@@ -57,6 +57,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 vertical: width > webScreenSize ? 15 : 0,
               ),
               child: PostCard(
+                key: UniqueKey(),
                 snap: snapshot.data!.docs[index].data(),
               ),
             ),
