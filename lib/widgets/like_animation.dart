@@ -16,7 +16,7 @@ class LikeAnimation extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LikeAnimationState createState() => _LikeAnimationState();
+  State<LikeAnimation> createState() => _LikeAnimationState();
 }
 
 class _LikeAnimationState extends State<LikeAnimation>

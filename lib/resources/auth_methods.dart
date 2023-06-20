@@ -43,7 +43,7 @@ class AuthMethods {
         String photoUrl =
             await StorageMethods().uploadImageToStorage('profilePics', file, false);
 
-        model.User _user = model.User(
+        model.User user = model.User(
           username: username,
           uid: cred.user!.uid,
           photoUrl: photoUrl,
@@ -57,7 +57,7 @@ class AuthMethods {
         await _firestore
             .collection("users")
             .doc(cred.user!.uid)
-            .set(_user.toJson());
+            .set(user.toJson());
 
         res = "success";
       } else {
