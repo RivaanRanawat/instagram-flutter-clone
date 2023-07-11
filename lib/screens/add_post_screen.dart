@@ -19,6 +19,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
   bool isLoading = false;
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _urlController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
 
   _selectImage(BuildContext parentContext) async {
     return showDialog(
@@ -68,7 +70,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
     try {
       // upload to storage and db
       String res = await FireStoreMethods().uploadPost(
+        _titleController.text,
         _descriptionController.text,
+        _urlController.text,
         _file!,
         uid,
         username,
@@ -165,6 +169,22 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: TextField(
+                        controller: _titleController,
+                        decoration: const InputDecoration(
+                            hintText: "Write a title...",
+                            border: InputBorder.none),
+                        maxLines: 8,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     CircleAvatar(
                       backgroundImage: NetworkImage(
                         userProvider.getUser.photoUrl,
@@ -193,6 +213,23 @@ class _AddPostScreenState extends State<AddPostScreen> {
                             image: MemoryImage(_file!),
                           )),
                         ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: TextField(
+                        controller: _urlController,
+                        decoration: const InputDecoration(
+                            hintText: "Enter the URL...",
+                            border: InputBorder.none),
+                        maxLines: 2,
                       ),
                     ),
                   ],

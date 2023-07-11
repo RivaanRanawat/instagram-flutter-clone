@@ -4,6 +4,7 @@ import 'package:instagram_clone_flutter/models/user.dart' as model;
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
 import 'package:instagram_clone_flutter/resources/firestore_methods.dart';
 import 'package:instagram_clone_flutter/screens/comments_screen.dart';
+import 'package:instagram_clone_flutter/screens/link_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/global_variable.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
@@ -155,6 +156,24 @@ class _PostCardState extends State<PostCard> {
               ],
             ),
           ),
+
+          // TITLE SECTION OF THE POST
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(
+              top: 8,
+            ),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(color: primaryColor),
+                children: [
+                  TextSpan(
+                    text: ' ${widget.snap['title']}',
+                  ),
+                ],
+              ),
+            ),
+          ),
           // IMAGE SECTION OF THE POST
           GestureDetector(
             onDoubleTap: () {
@@ -236,10 +255,18 @@ class _PostCardState extends State<PostCard> {
                 ),
               ),
               IconButton(
-                  icon: const Icon(
-                    Icons.send,
+                icon: const Icon(
+                  Icons.send,
+                ),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => LinkScreen(
+                      linkURL: widget.snap['linkURL'] ??
+                          'https://www.geeksforgeeks.org/urls-in-flutter/',
+                    ),
                   ),
-                  onPressed: () {}),
+                ),
+              ),
               Expanded(
                   child: Align(
                 alignment: Alignment.bottomRight,
@@ -273,12 +300,12 @@ class _PostCardState extends State<PostCard> {
                     text: TextSpan(
                       style: const TextStyle(color: primaryColor),
                       children: [
-                        TextSpan(
-                          text: widget.snap['username'].toString(),
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        // TextSpan(
+                        //   text: widget.snap['username'].toString(),
+                        //   style: const TextStyle(
+                        //     fontWeight: FontWeight.bold,
+                        //   ),
+                        // ),
                         TextSpan(
                           text: ' ${widget.snap['description']}',
                         ),
