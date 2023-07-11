@@ -17,11 +17,11 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-        apiKey: "AIzaSyCZ-xrXqD5D19Snauto-Fx_nLD7PLrBXGM",
-        appId: "1:585119731880:web:eca6e4b3c42a755cee329d",
-        messagingSenderId: "585119731880",
-        projectId: "instagram-clone-4cea4",
-        storageBucket: 'instagram-clone-4cea4.appspot.com'
+        apiKey: "AIzaSyDvNQHKk8IttsEE_HFs4aqyMBAPMKOC6Xg",
+        appId: "1:420842025106:web:61ef579ea104edd60e364b",
+        messagingSenderId: "420842025106",
+        projectId: "newms-demo",
+        storageBucket: 'newms-demo.appspot.com'
       ),
     );
   } else {
