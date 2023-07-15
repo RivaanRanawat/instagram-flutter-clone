@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:instagram_clone_flutter/screens/profile_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
+import 'package:instagram_clone_flutter/widgets/my_video_player.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -87,15 +88,30 @@ class _SearchScreenState extends State<SearchScreen> {
                   );
                 }
 
-                return MasonryGridView.count(
-                  crossAxisCount: 3,
+                return GridView.builder(
+                  shrinkWrap: true,
                   itemCount: (snapshot.data! as dynamic).docs.length,
-                  itemBuilder: (context, index) => Image.network(
-                    (snapshot.data! as dynamic).docs[index]['postUrl'],
-                    fit: BoxFit.cover,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 1.5,
+                    childAspectRatio: 1,
                   ),
-                  mainAxisSpacing: 8.0,
-                  crossAxisSpacing: 8.0,
+                  itemBuilder: (context, index) {
+                    DocumentSnapshot snap =
+                        (snapshot.data! as dynamic).docs[index];
+
+                    return SizedBox(
+                      child: snap['isVideo'] == true
+                          ? VideoApp(
+                              filepath: (snapshot.data as dynamic).docs[index]
+                                  ['videoUrl'])
+                          : Image(
+                              image: NetworkImage(snap['postUrl']),
+                              fit: BoxFit.cover,
+                            ),
+                    );
+                  },
                 );
               },
             ),

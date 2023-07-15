@@ -3,20 +3,36 @@ import 'package:flutter/foundation.dart';
 import 'package:instagram_clone_flutter/models/post.dart';
 import 'package:instagram_clone_flutter/resources/storage_methods.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:io';
 
 class FireStoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<String> uploadPost(String title, String description, String linkURL, Uint8List file, String uid,
-      String username, String profImage) async {
+  Future<String> uploadPost(
+      String title,
+      String description,
+      String linkURL,
+      Uint8List? file,
+      File? video,
+      bool isVideo,
+      String uid,
+      String username,
+      String profImage) async {
     // asking uid here because we dont want to make extra calls to firebase auth when we can just get from our state management
     String res = "Some error occurred";
     try {
-      String photoUrl =
-          await StorageMethods().uploadImageToStorage('posts', file, true);
+      String? photoUrl;
+      String? videoUrl;
+      if (isVideo)
+        videoUrl =
+              await StorageMethods().uploadVideoToStorage('posts', video, true);
+        
+      else
+        photoUrl =
+            await StorageMethods().uploadImageToStorage('posts', file, true);
       String postId = const Uuid().v1(); // creates unique id based on time
       Post post = Post(
-        title:title,
+        title: title,
         description: description,
         linkURL: linkURL,
         uid: uid,
@@ -25,6 +41,8 @@ class FireStoreMethods {
         postId: postId,
         datePublished: DateTime.now(),
         postUrl: photoUrl,
+        videoUrl: videoUrl,
+        isVideo: isVideo,
         profImage: profImage,
       );
       _firestore.collection('posts').doc(postId).set(post.toJson());
@@ -75,12 +93,38 @@ class FireStoreMethods {
           'uid': uid,
           'text': text,
           'commentId': commentId,
+          'likes': [],
+          'replies': commentId,
           'datePublished': DateTime.now(),
         });
         res = 'success';
       } else {
         res = "Please enter text";
       }
+    } catch (err) {
+      res = err.toString();
+    }
+    return res;
+  }
+
+  // Like Comment
+  Future<String> likeComment(
+      String postId, String commentId, String uid, List likes) async {
+    String res = "Some error occurred";
+    CollectionReference posts = FirebaseFirestore.instance.collection('posts');
+    try {
+      if (likes.contains(uid)) {
+        // if the likes list contains the user uid, we need to remove it
+        await posts.doc(postId).collection('comments').doc(commentId).update({
+          'likes': FieldValue.arrayRemove([uid])
+        });
+      } else {
+        // else we need to add uid to the likes array
+        await posts.doc(postId).collection('comments').doc(commentId).update({
+          'likes': FieldValue.arrayUnion([uid])
+        });
+      }
+      res = 'success';
     } catch (err) {
       res = err.toString();
     }

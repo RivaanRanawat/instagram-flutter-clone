@@ -7,6 +7,7 @@ import 'package:instagram_clone_flutter/screens/login_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/follow_button.dart';
+import 'package:instagram_clone_flutter/widgets/my_video_player.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -231,7 +232,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             (snapshot.data! as dynamic).docs[index];
 
                         return SizedBox(
-                          child: Image(
+                          child: snap['isVideo']==true?
+                          VideoApp(
+                                  filepath: (snapshot.data as dynamic)
+                                      .docs[index]['videoUrl']
+                                      ):
+                                      Image(
                             image: NetworkImage(snap['postUrl']),
                             fit: BoxFit.cover,
                           ),

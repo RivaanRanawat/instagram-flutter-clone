@@ -10,6 +10,14 @@ pickImage(ImageSource source) async {
   }
 }
 
+pickVideo(ImageSource source) async {
+  final ImagePicker imagePicker = ImagePicker();
+  XFile? file = await imagePicker.pickVideo(source: source);
+  if (file != null) {
+    return file;
+  }
+}
+
 // for displaying snackbars
 showSnackBar(BuildContext context, String text) {
   return ScaffoldMessenger.of(context).showSnackBar(

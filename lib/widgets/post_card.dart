@@ -9,6 +9,7 @@ import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/global_variable.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/like_animation.dart';
+import 'package:instagram_clone_flutter/widgets/my_video_player.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -192,10 +193,16 @@ class _PostCardState extends State<PostCard> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.35,
                   width: double.infinity,
-                  child: Image.network(
+                  child: widget.snap['isVideo'] ?
+                  //for video
+                  VideoApp(filepath: widget.snap['videoUrl'].toString())
+                  :
+                  //for image
+                  Image.network(
                     widget.snap['postUrl'].toString(),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
+      
                 ),
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),

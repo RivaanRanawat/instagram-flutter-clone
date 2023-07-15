@@ -8,7 +8,9 @@ class Post {
   final likes;
   final String postId;
   final DateTime datePublished;
-  final String postUrl;
+  final String? postUrl;
+  final String? videoUrl;
+  final bool isVideo;
   final String profImage;
   final String linkURL;
 
@@ -20,7 +22,9 @@ class Post {
     required this.likes,
     required this.postId,
     required this.datePublished,
-    required this.postUrl,
+    this.postUrl,
+    this.videoUrl,
+    required this.isVideo,
     required this.profImage,
     required this.linkURL,
   });
@@ -37,6 +41,8 @@ class Post {
         datePublished: snapshot["datePublished"],
         username: snapshot["username"],
         postUrl: snapshot['postUrl'],
+        videoUrl: snapshot['videoUrl'],
+        isVideo: snapshot['isVideo'],
         profImage: snapshot['profImage'],
         linkURL: snapshot['linkURL']);
   }
@@ -50,6 +56,8 @@ class Post {
         "postId": postId,
         "datePublished": datePublished,
         'postUrl': postUrl,
+        'videoUrl': videoUrl,
+        'isVideo': isVideo,
         'profImage': profImage,
         'linkURL': linkURL,
       };

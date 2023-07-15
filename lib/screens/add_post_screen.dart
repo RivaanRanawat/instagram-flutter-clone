@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone_flutter/providers/user_provider.dart';
@@ -7,6 +7,8 @@ import 'package:instagram_clone_flutter/resources/firestore_methods.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
+import 'package:instagram_clone_flutter/widgets/my_video_player.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({Key? key}) : super(key: key);
@@ -17,6 +19,11 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
+  File? _video;
+  late VideoPlayerController _videoPlayerController;
+  // late VideoPlayerController? _cameraVideoPlayerController;
+  bool isImage = false;
+  bool isVideo = false;
   bool isLoading = false;
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
@@ -37,16 +44,63 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   Uint8List file = await pickImage(ImageSource.camera);
                   setState(() {
                     _file = file;
+                    isImage = true;
+                    isVideo = false;
                   });
+                }),
+            // SimpleDialogOption(
+            //     padding: const EdgeInsets.all(20),
+            //     child: const Text('Record a video'),
+            //     onPressed: () async {
+            //       Navigator.pop(context);
+            //       XFile? file = await pickVideo(ImageSource.camera);
+            //       if (file != null) {
+            //         setState(() {
+            //           isVideo = true;
+            //         });
+
+            //         _videoPlayerController =
+            //             VideoPlayerController.file(File(file.path))
+            //               ..initialize().then((_) {
+            //                 setState(() {});
+            //                 _videoPlayerController.play();
+            //               });
+            //       }
+            //     }),
+            SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Choose Image from Gallery'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Uint8List? fileDataImage =
+                      await pickImage(ImageSource.gallery);
+
+                  if (fileDataImage != null) {
+                    setState(() {
+                      _file = fileDataImage;
+                      isImage = true;
+                      isVideo = false;
+                    });
+                  }
                 }),
             SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
-                child: const Text('Choose from Gallery'),
+                child: const Text('Choose Video from Gallery'),
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.gallery);
+
+                  XFile pickedFile = await pickVideo(ImageSource.gallery);
+                  File myvideo = File(pickedFile.path);
+
+                  _videoPlayerController = VideoPlayerController.file(myvideo)
+                    ..initialize().then((_) {
+                      setState(() {});
+                      _videoPlayerController.play();
+                    })
+                    ..setLooping(true);
                   setState(() {
-                    _file = file;
+                    isVideo = true;
+                    _video = myvideo;
                   });
                 }),
             SimpleDialogOption(
@@ -73,7 +127,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
         _titleController.text,
         _descriptionController.text,
         _urlController.text,
-        _file!,
+        _file,
+        _video,
+        isVideo,
         uid,
         username,
         profImage,
@@ -108,6 +164,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
   void clearImage() {
     setState(() {
       _file = null;
+      isImage = false;
+      isVideo = false;
     });
   }
 
@@ -121,7 +179,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
-    return _file == null
+    return _file == null && !isVideo
         ? Center(
             child: IconButton(
               icon: const Icon(
@@ -159,7 +217,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
               ],
             ),
             // POST FORM
-            body: Column(
+            body: ListView(
               children: <Widget>[
                 isLoading
                     ? const LinearProgressIndicator()
@@ -185,11 +243,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        userProvider.getUser.photoUrl,
-                      ),
-                    ),
+                    // CircleAvatar(
+                    //   backgroundImage: NetworkImage(
+                    //     userProvider.getUser.photoUrl,
+                    //   ),
+                    // ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: TextField(
@@ -200,28 +258,82 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         maxLines: 8,
                       ),
                     ),
-                    SizedBox(
-                      height: 45.0,
-                      width: 45.0,
-                      child: AspectRatio(
-                        aspectRatio: 487 / 451,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                            fit: BoxFit.fill,
-                            alignment: FractionalOffset.topCenter,
-                            image: MemoryImage(_file!),
-                          )),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    
+                    if (isVideo)
+                      _videoPlayerController.value.isInitialized
+                          ? SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: AspectRatio(
+                                aspectRatio:
+                                    _videoPlayerController.value.aspectRatio,
+                                child: SizedBox(
+                                    width: MediaQuery.of(context).size.width,
+                                    child: VideoPlayer(_videoPlayerController)),
+                              ))
+                          : Container()
+
+                    // if(isVideo)
+                    //   Container(
+                    //     child: FloatingActionButton(
+                    //       onPressed: () {
+                    //         setState(() {
+                    //           _videoPlayerController.value.isPlaying
+                    //               ? _videoPlayerController.pause()
+                    //               : _videoPlayerController.play();
+                    //         });
+                    //       },
+                    //       child: Icon(
+                    //         _videoPlayerController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                    //       ),
+                    //     ),
+                    //   )
+                    else
+                      SizedBox(
+                        height: 45.0,
+                        width: 45.0,
+                        child: AspectRatio(
+                          aspectRatio: 487 / 451,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                              fit: BoxFit.fill,
+                              alignment: FractionalOffset.topCenter,
+                              image: MemoryImage(_file!),
+                            )),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                if (isVideo)
+                  Positioned(
+                    top: 0.0,
+                    child: Container(
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          setState(() {
+                            _videoPlayerController.value.isPlaying
+                                ? _videoPlayerController.pause()
+                                : _videoPlayerController.play();
+                          });
+                        },
+                        child: Icon(
+                          _videoPlayerController.value.isPlaying
+                              ? Icons.pause
+                              : Icons.play_arrow,
+                        ),
+                      ),
+                    ),
+                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.3,
                       child: TextField(
