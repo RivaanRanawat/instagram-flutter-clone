@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:instagram_clone_flutter/utils/colors.dart';
 
 class VideoApp extends StatefulWidget {
   final String filepath;
@@ -25,14 +24,15 @@ class _VideoAppState extends State<VideoApp> {
   late bool isMuted;
   late bool isPlaying;
   late bool isFullScreen;
+  late bool iconVisible;
 
   @override
   void initState() {
     super.initState();
     isMuted = widget.initiallyMuted;
-    isPlaying = widget
-        .initiallyPlaying; // assuming the video should be initially playing
+    isPlaying = widget.initiallyPlaying;
     isFullScreen = false;
+    iconVisible = widget.showButtonIcons;
 
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.filepath))
       ..initialize().then((_) {
@@ -42,18 +42,26 @@ class _VideoAppState extends State<VideoApp> {
       });
   }
 
+  void handleTap() {
+    setState(() {
+      iconVisible = !iconVisible;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
+            ? GestureDetector(
+                onTap: handleTap,
+                child: AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: VideoPlayer(_controller),
+                ))
             : CircularProgressIndicator(),
       ),
-      floatingActionButton: widget.showButtonIcons
+      floatingActionButton: iconVisible
           ? Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
@@ -133,7 +141,7 @@ class FullScreenPlayer extends StatelessWidget {
     } else {
       controller.play();
     }
-    isPlay=!isPlay;
+    isPlay = !isPlay;
   }
 
   void fullScreenCallback(BuildContext context) {
