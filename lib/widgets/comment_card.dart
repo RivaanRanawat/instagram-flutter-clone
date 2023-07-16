@@ -20,72 +20,67 @@ class _CommentCardState extends State<CommentCard> {
     final model.User user = Provider.of<UserProvider>(context).getUser;
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-      child: Row(
-        children: <Widget>[
-          CircleAvatar(
-            backgroundImage: NetworkImage(
-              widget.snap.data()['profilePic'],
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      child: Column(
+        children: [
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(widget.snap.data()['profilePic']),
+              radius: 24,
             ),
-            radius: 18,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: widget.snap.data()['name'],
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            )),
-                        TextSpan(
-                          text: ' ${widget.snap.data()['text']}',
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      DateFormat.yMMMd().format(
-                        widget.snap.data()['datePublished'].toDate(),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  )
-                ],
+            title: Row(
+              children: [
+                Text(
+                  widget.snap.data()['name'],
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                SizedBox(width: 10),
+                Text(
+                  DateFormat.yMMMd()
+                      .format(widget.snap.data()['datePublished'].toDate()),
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                )
+              ],
+            ),
+            subtitle: Text(
+              widget.snap.data()['text'],
+              style: TextStyle(fontSize: 14),
+            ),
+            trailing: GestureDetector(
+              child: AnimatedLikeButton(
+                isLiked: widget.snap['likes'].contains(user.uid),
+                size: 24,
               ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            child: IconButton(
-              icon: widget.snap['likes'].contains(user.uid)
-                  ? const Icon(
-                      Icons.favorite,
-                      color: Colors.red,
-                    )
-                  : const Icon(
-                      Icons.favorite_border,
-                    ),
-              onPressed: () => FireStoreMethods().likeComment(
+              onTap: () => FireStoreMethods().likeComment(
                 widget.snap['uid'].toString(),
                 widget.snap['commentId'].toString(),
                 user.uid,
                 widget.snap['likes'],
               ),
             ),
-          )
+          ),
+          Divider(),
         ],
+      ),
+    );
+  }
+}
+
+class AnimatedLikeButton extends StatelessWidget {
+  final bool isLiked;
+  final double size;
+
+  AnimatedLikeButton({Key? key, required this.isLiked, required this.size})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 250),
+      child: Icon(
+        isLiked ? Icons.favorite : Icons.favorite_border,
+        color: isLiked ? Colors.red : Colors.grey,
+        size: size,
       ),
     );
   }

@@ -179,26 +179,21 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
     final UserProvider userProvider = Provider.of<UserProvider>(context);
 
-    return _file == null && !isVideo
-        ? Center(
-            child: IconButton(
-              icon: const Icon(
-                Icons.upload,
-              ),
-              onPressed: () => _selectImage(context),
-            ),
-          )
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
         : Scaffold(
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
+              elevation: 0.0,
+              title: Text(
+                'New Post',
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+              ),
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: clearImage,
               ),
-              title: const Text(
-                'Post to',
-              ),
-              centerTitle: false,
               actions: <Widget>[
                 TextButton(
                   onPressed: () => postImage(
@@ -216,139 +211,78 @@ class _AddPostScreenState extends State<AddPostScreen> {
                 )
               ],
             ),
-            // POST FORM
-            body: ListView(
-              children: <Widget>[
-                isLoading
-                    ? const LinearProgressIndicator()
-                    : const Padding(padding: EdgeInsets.only(top: 0.0)),
-                const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            body: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
                   children: <Widget>[
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      child: TextField(
-                        controller: _titleController,
-                        decoration: const InputDecoration(
-                            hintText: "Write a title...",
-                            border: InputBorder.none),
-                        maxLines: 8,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    // CircleAvatar(
-                    //   backgroundImage: NetworkImage(
-                    //     userProvider.getUser.photoUrl,
-                    //   ),
-                    // ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      child: TextField(
-                        controller: _descriptionController,
-                        decoration: const InputDecoration(
-                            hintText: "Write a caption...",
-                            border: InputBorder.none),
-                        maxLines: 8,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    if (isVideo)
-                      _videoPlayerController.value.isInitialized
-                          ? SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: AspectRatio(
-                                aspectRatio:
-                                    _videoPlayerController.value.aspectRatio,
-                                child: SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    child: VideoPlayer(_videoPlayerController)),
-                              ))
-                          : Container()
-
-                    // if(isVideo)
-                    //   Container(
-                    //     child: FloatingActionButton(
-                    //       onPressed: () {
-                    //         setState(() {
-                    //           _videoPlayerController.value.isPlaying
-                    //               ? _videoPlayerController.pause()
-                    //               : _videoPlayerController.play();
-                    //         });
-                    //       },
-                    //       child: Icon(
-                    //         _videoPlayerController.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                    //       ),
-                    //     ),
-                    //   )
-                    else
-                      SizedBox(
-                        height: 45.0,
-                        width: 45.0,
-                        child: AspectRatio(
-                          aspectRatio: 487 / 451,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              fit: BoxFit.fill,
-                              alignment: FractionalOffset.topCenter,
-                              image: MemoryImage(_file!),
-                            )),
-                          ),
+                    SizedBox(height: 10.0),
+                    GestureDetector(
+                      onTap: () => _selectImage(context),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                      ),
-                  ],
-                ),
-                if (isVideo)
-                  Positioned(
-                    top: 0.0,
-                    child: Container(
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          setState(() {
-                            _videoPlayerController.value.isPlaying
-                                ? _videoPlayerController.pause()
-                                : _videoPlayerController.play();
-                          });
-                        },
-                        child: Icon(
-                          _videoPlayerController.value.isPlaying
-                              ? Icons.pause
-                              : Icons.play_arrow,
-                        ),
+                        child: _displayChild(),
                       ),
                     ),
-                  ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      child: TextField(
-                        controller: _urlController,
-                        decoration: const InputDecoration(
-                            hintText: "Enter the URL...",
-                            border: InputBorder.none),
-                        maxLines: 2,
+                    SizedBox(height: 10.0),
+                    TextField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                        hintText: "Write a title...",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 10.0),
+                    TextField(
+                      controller: _descriptionController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: 'Caption',
+                        hintText: "Write a caption...",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 10.0),
+                    TextField(
+                      controller: _urlController,
+                      decoration: InputDecoration(
+                        labelText: 'Post URL',
+                        hintText: "Enter the URL...",
+                        border: OutlineInputBorder(),
                       ),
                     ),
                   ],
                 ),
-                const Divider(),
-              ],
+              ),
             ),
           );
+  }
+
+  Widget _displayChild() {
+    if (_file == null && !isVideo) {
+      return Icon(
+        Icons.add_photo_alternate,
+        color: Colors.grey[800],
+      );
+    } else {
+      if (isVideo) {
+        return _videoPlayerController.value.isInitialized
+            ? AspectRatio(
+                aspectRatio: _videoPlayerController.value.aspectRatio,
+                child: VideoPlayer(_videoPlayerController),
+              )
+            : Container();
+      } else {
+        return Image.memory(
+          _file!,
+          fit: BoxFit.cover,
+        );
+      }
+    }
   }
 }

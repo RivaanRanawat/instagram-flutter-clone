@@ -6,7 +6,6 @@ import 'package:instagram_clone_flutter/responsive/responsive_layout.dart';
 import 'package:instagram_clone_flutter/responsive/web_screen_layout.dart';
 import 'package:instagram_clone_flutter/screens/signup_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
-import 'package:instagram_clone_flutter/utils/global_variable.dart';
 import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/text_field_input.dart';
 
@@ -63,102 +62,96 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Container(
-          padding: MediaQuery.of(context).size.width > webScreenSize
-              ? EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width / 3)
-              : const EdgeInsets.symmetric(horizontal: 32),
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                flex: 2,
-                child: Container(),
-              ),
-              SvgPicture.asset(
-                'assets/NEWMS_SVG.svg',
-                color: primaryColor,
-                height: 64,
-              ),
-              const SizedBox(
-                height: 64,
-              ),
-              TextFieldInput(
-                hintText: 'Enter your email',
-                textInputType: TextInputType.emailAddress,
-                textEditingController: _emailController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Enter your password',
-                textInputType: TextInputType.text,
-                textEditingController: _passwordController,
-                isPass: true,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              InkWell(
-                onTap: loginUser,
-                child: Container(
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    color: blueColor,
-                  ),
-                  child: !_isLoading
-                      ? const Text(
-                          'Log in',
-                        )
-                      : const CircularProgressIndicator(
-                          color: primaryColor,
-                        ),
+      backgroundColor: Theme.of(context).primaryColor,
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.050),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const SizedBox(
+                  height: 70,
                 ),
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              Flexible(
-                flex: 2,
-                child: Container(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: const Text(
-                      'Dont have an account?',
+                SvgPicture.asset(
+                  'assets/NEWMS_SVG.svg',
+                  color: primaryColor,
+                  height: 64,
+                ),
+                const SizedBox(
+                  height: 50,
+                ),
+                TextFieldInput(
+                  hintText: 'Enter your email',
+                  textInputType: TextInputType.emailAddress,
+                  textEditingController: _emailController,
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                TextFieldInput(
+                  hintText: 'Enter your password',
+                  textInputType: TextInputType.text,
+                  textEditingController: _passwordController,
+                  isPass: true,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextButton(
+                  onPressed: loginUser,
+                  child: _isLoading
+                      ? CircularProgressIndicator()
+                      : Text(
+                          'Log In',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                          ),
+                        ),
+                  style: TextButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SignupScreen(),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Dont have an account?',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
                       ),
                     ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: const Text(
-                        ' Signup.',
+                    TextButton(
+                      child: Text(
+                        ' Sign up.',
                         style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignupScreen(),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

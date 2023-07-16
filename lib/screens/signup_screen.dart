@@ -35,24 +35,20 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void signUpUser() async {
-    // set loading to true
     setState(() {
       _isLoading = true;
     });
 
-    // signup user using our authmethodds
     String res = await AuthMethods().signUpUser(
         email: _emailController.text,
         password: _passwordController.text,
         username: _usernameController.text,
         bio: _bioController.text,
         file: _image!);
-    // if string returned is sucess, user has been created
     if (res == "success") {
       setState(() {
         _isLoading = false;
       });
-      // navigate to the home screen
       if (context.mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
@@ -67,7 +63,6 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         _isLoading = false;
       });
-      // show the error
       if (context.mounted) {
         showSnackBar(context, res);
       }
@@ -76,7 +71,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   selectImage() async {
     Uint8List im = await pickImage(ImageSource.gallery);
-    // set state because we need to display the image we selected on the circle avatar
     setState(() {
       _image = im;
     });
@@ -88,139 +82,99 @@ class _SignupScreenState extends State<SignupScreen> {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                flex: 2,
-                child: Container(),
-              ),
-              SvgPicture.asset(
-                'assets/NEWMS_SVG.svg',
-                color: primaryColor,
-                height: 64,
-              ),
-              const SizedBox(
-                height: 64,
-              ),
-              Stack(
-                children: [
-                  _image != null
-                      ? CircleAvatar(
-                          radius: 64,
-                          backgroundImage: MemoryImage(_image!),
-                          backgroundColor: Colors.red,
-                        )
-                      : const CircleAvatar(
-                          radius: 64,
-                          backgroundImage: NetworkImage(
-                              'https://i.stack.imgur.com/l60Hf.png'),
-                          backgroundColor: Colors.red,
-                        ),
-                  Positioned(
-                    bottom: -10,
-                    left: 80,
-                    child: IconButton(
-                      onPressed: selectImage,
-                      icon: const Icon(Icons.add_a_photo),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Enter your username',
-                textInputType: TextInputType.text,
-                textEditingController: _usernameController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Enter your email',
-                textInputType: TextInputType.emailAddress,
-                textEditingController: _emailController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Enter your password',
-                textInputType: TextInputType.text,
-                textEditingController: _passwordController,
-                isPass: true,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Enter your bio',
-                textInputType: TextInputType.text,
-                textEditingController: _bioController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              InkWell(
-                onTap: signUpUser,
-                child: Container(
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    color: blueColor,
-                  ),
-                  child: !_isLoading
-                      ? const Text(
-                          'Sign up',
-                        )
-                      : const CircularProgressIndicator(
-                          color: primaryColor,
-                        ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 100),
+                SvgPicture.asset(
+                  'assets/NEWMS_SVG.svg',
+                  color: primaryColor,
+                  height: 64,
                 ),
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              Flexible(
-                flex: 2,
-                child: Container(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: const Text(
-                      'Already have an account?',
+                const SizedBox(height: 64),
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      radius: 64,
+                      backgroundImage: _image != null
+                          ? MemoryImage(_image!)
+                          : NetworkImage('https://i.stack.imgur.com/l60Hf.png')
+                              as ImageProvider<Object>,
+                      backgroundColor: Colors.red,
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
+                    IconButton(
+                      onPressed: selectImage,
+                      icon: Icon(Icons.add_a_photo),
+                      color: primaryColor,
                     ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: const Text(
-                        ' Login.',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                  ],
+                ),
+                SizedBox(height: 78),
+                TextFieldInput(
+                  hintText: 'Username',
+                  textInputType: TextInputType.name,
+                  textEditingController: _usernameController,
+                ),
+                TextFieldInput(
+                  hintText: 'Email',
+                  textInputType: TextInputType.emailAddress,
+                  textEditingController: _emailController,
+                ),
+                TextFieldInput(
+                  hintText: 'Password',
+                  textInputType: TextInputType.visiblePassword,
+                  textEditingController: _passwordController,
+                  isPass: true,
+                ),
+                TextFieldInput(
+                  hintText: 'Bio',
+                  textInputType: TextInputType.text,
+                  textEditingController: _bioController,
+                ),
+                SizedBox(height: 48),
+                TextButton(
+                  onPressed: signUpUser,
+                  child: _isLoading
+                      ? CircularProgressIndicator(color: primaryColor)
+                      : Text(
+                          'Sign up',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
-                      ),
+                  style: TextButton.styleFrom(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 20, horizontal: 100),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    backgroundColor: Colors.blue,
+                  ),
+                ),
+                SizedBox(height: 50),
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  ),
+                  child: Text.rich(
+                    TextSpan(
+                      text: 'Already have an account? ',
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: 'Log in',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.blue),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                SizedBox(height: 50),
+              ],
+            ),
           ),
         ),
       ),

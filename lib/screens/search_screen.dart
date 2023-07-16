@@ -20,12 +20,26 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         backgroundColor: mobileBackgroundColor,
         title: Form(
           child: TextFormField(
+            style: TextStyle(color: Colors.white),
             controller: searchController,
-            decoration:
-                const InputDecoration(labelText: 'Search for a user...'),
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              labelText: 'Search for a user...',
+              labelStyle: TextStyle(color: Colors.white),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+              border: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
             onFieldSubmitted: (String _) {
               setState(() {
                 isShowUsers = true;
@@ -65,10 +79,14 @@ class _SearchScreenState extends State<SearchScreen> {
                           backgroundImage: NetworkImage(
                             (snapshot.data! as dynamic).docs[index]['photoUrl'],
                           ),
-                          radius: 16,
+                          radius: 25, // enlarges the profile photo
                         ),
                         title: Text(
                           (snapshot.data! as dynamic).docs[index]['username'],
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight
+                                  .w500), // changes the text color and weight
                         ),
                       ),
                     );
@@ -101,15 +119,28 @@ class _SearchScreenState extends State<SearchScreen> {
                     DocumentSnapshot snap =
                         (snapshot.data! as dynamic).docs[index];
 
-                    return SizedBox(
-                      child: snap['isVideo'] == true
-                          ? VideoApp(
-                              filepath: (snapshot.data as dynamic).docs[index]
-                                  ['videoUrl'])
-                          : Image(
-                              image: NetworkImage(snap['postUrl']),
-                              fit: BoxFit.cover,
-                            ),
+                    return GestureDetector(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen(
+                                  uid: (snapshot.data! as dynamic).docs[index]
+                                      ['uid'],
+                                )),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: snap['isVideo'] == true
+                            ? VideoApp(
+                                filepath: (snapshot.data as dynamic).docs[index]
+                                    ['videoUrl'])
+                            : Hero(
+                                tag: 'imageHero',
+                                child: Image(
+                                  image: NetworkImage(snap['postUrl']),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                      ),
                     );
                   },
                 );

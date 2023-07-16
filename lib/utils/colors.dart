@@ -6,3 +6,8 @@ const mobileSearchColor = Color.fromRGBO(38, 38, 38, 1);
 const blueColor = Color.fromRGBO(0, 149, 246, 1);
 const primaryColor = Colors.white;
 const secondaryColor = Colors.grey;
+
+
+// Colors
+const AppBarBackgroundColor = Color(0xFFCCCCCC);
+const ActionIconColor = Color(0xFF333333);

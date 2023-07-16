@@ -5,12 +5,12 @@ import 'package:instagram_clone_flutter/resources/auth_methods.dart';
 import 'package:instagram_clone_flutter/resources/firestore_methods.dart';
 import 'package:instagram_clone_flutter/screens/login_screen.dart';
 import 'package:instagram_clone_flutter/utils/colors.dart';
-import 'package:instagram_clone_flutter/utils/utils.dart';
 import 'package:instagram_clone_flutter/widgets/follow_button.dart';
 import 'package:instagram_clone_flutter/widgets/my_video_player.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
+
   const ProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
@@ -35,18 +35,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       isLoading = true;
     });
-    try {
-      var userSnap = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.uid)
-          .get();
 
-      // get post lENGTH
-      var postSnap = await FirebaseFirestore.instance
-          .collection('posts')
-          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .get();
+    var userSnap = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.uid)
+        .get();
+    var postSnap = await FirebaseFirestore.instance
+        .collection('posts')
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
 
+    setState(() {
       postLen = postSnap.docs.length;
       userData = userSnap.data()!;
       followers = userSnap.data()!['followers'].length;
@@ -54,14 +53,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isFollowing = userSnap
           .data()!['followers']
           .contains(FirebaseAuth.instance.currentUser!.uid);
-      setState(() {});
-    } catch (e) {
-      showSnackBar(
-        context,
-        e.toString(),
-      );
-    }
-    setState(() {
       isLoading = false;
     });
   }
@@ -75,9 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         : Scaffold(
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
-              title: Text(
-                userData['username'],
-              ),
+              title: Text(userData['username']),
               centerTitle: false,
             ),
             body: ListView(
@@ -90,9 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           CircleAvatar(
                             backgroundColor: Colors.grey,
-                            backgroundImage: NetworkImage(
-                              userData['photoUrl'],
-                            ),
+                            backgroundImage: NetworkImage(userData['photoUrl']),
                             radius: 40,
                           ),
                           Expanded(
@@ -182,9 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Container(
                         alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(
-                          top: 15,
-                        ),
+                        padding: const EdgeInsets.only(top: 15),
                         child: Text(
                           userData['username'],
                           style: const TextStyle(
@@ -194,9 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Container(
                         alignment: Alignment.centerLeft,
-                        padding: const EdgeInsets.only(
-                          top: 1,
-                        ),
+                        padding: const EdgeInsets.only(top: 1),
                         child: Text(
                           userData['bio'],
                         ),
@@ -230,17 +213,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemBuilder: (context, index) {
                         DocumentSnapshot snap =
                             (snapshot.data! as dynamic).docs[index];
-
                         return SizedBox(
-                          child: snap['isVideo']==true?
-                          VideoApp(
+                          child: snap['isVideo'] == true
+                              ? VideoApp(
                                   filepath: (snapshot.data as dynamic)
-                                      .docs[index]['videoUrl']
-                                      ):
-                                      Image(
-                            image: NetworkImage(snap['postUrl']),
-                            fit: BoxFit.cover,
-                          ),
+                                      .docs[index]['videoUrl'])
+                              : Image(
+                                  image: NetworkImage(snap['postUrl']),
+                                  fit: BoxFit.cover,
+                                ),
                         );
                       },
                     );

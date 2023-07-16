@@ -1,56 +1,112 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:instagram_clone_flutter/utils/colors.dart';
 
-/// Stateful widget to fetch and then display video content.
 class VideoApp extends StatefulWidget {
   final String filepath;
-  const VideoApp({required this.filepath, Key? key}) : super(key: key);
+  final bool initiallyMuted;
+  final bool initiallyPlaying;
+  final bool showButtonIcons;
+
+  const VideoApp(
+      {required this.filepath,
+      this.initiallyMuted = false,
+      this.initiallyPlaying = true,
+      this.showButtonIcons = true,
+      Key? key})
+      : super(key: key);
+
   @override
   _VideoAppState createState() => _VideoAppState();
 }
 
 class _VideoAppState extends State<VideoApp> {
   late VideoPlayerController _controller;
+  late bool isMuted;
+  late bool isPlaying;
+  late bool isFullScreen;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        VideoPlayerController.networkUrl(Uri.parse(widget.filepath))
-          ..initialize().then((_) {
-            // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-            setState(() {});
-            _controller.play();
-          })
-      ..setLooping(true);
+    isMuted = widget.initiallyMuted;
+    isPlaying = widget
+        .initiallyPlaying; // assuming the video should be initially playing
+    isFullScreen = false;
+
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.filepath))
+      ..initialize().then((_) {
+        setState(() {});
+        if (isPlaying) _controller.play();
+        _controller.setLooping(true);
+      });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Video for the newms card',
-      home: Scaffold(
-        body: Center(
-          child: _controller.value.isInitialized
-              ? AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
-                )
-              : Container(),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              _controller.value.isPlaying
-                  ? _controller.pause()
-                  : _controller.play();
-            });
-          },
-          child: Icon(
-            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-          ),
-        ),
+    return Scaffold(
+      body: Center(
+        child: _controller.value.isInitialized
+            ? AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
+              )
+            : CircularProgressIndicator(),
       ),
+      floatingActionButton: widget.showButtonIcons
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                FloatingActionButton(
+                  mini: true,
+                  onPressed: () {
+                    setState(() {
+                      isMuted
+                          ? _controller.setVolume(1.0)
+                          : _controller.setVolume(0.0);
+                      isMuted = !isMuted;
+                    });
+                  },
+                  child: Icon(isMuted ? Icons.volume_off : Icons.volume_up),
+                ),
+                SizedBox(height: 10),
+                FloatingActionButton(
+                  mini: true,
+                  onPressed: () {
+                    setState(() {
+                      _controller.value.isPlaying
+                          ? _controller.pause()
+                          : _controller.play();
+                      isPlaying = !isPlaying;
+                    });
+                  },
+                  child: Icon(_controller.value.isPlaying
+                      ? Icons.pause
+                      : Icons.play_arrow),
+                ),
+                SizedBox(height: 10),
+                FloatingActionButton(
+                  mini: true,
+                  onPressed: () async {
+                    setState(() {
+                      isFullScreen = !isFullScreen;
+                    });
+                    isFullScreen
+                        ? await _controller.play()
+                        : await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FullScreenPlayer(
+                                      controller: _controller,
+                                    )));
+                  },
+                  child: isFullScreen
+                      ? Icon(Icons.fullscreen_exit)
+                      : Icon(Icons.fullscreen),
+                )
+              ],
+            )
+          : null,
     );
   }
 
@@ -58,5 +114,73 @@ class _VideoAppState extends State<VideoApp> {
   void dispose() {
     super.dispose();
     _controller.dispose();
+  }
+}
+
+class FullScreenPlayer extends StatelessWidget {
+  final VideoPlayerController controller;
+  bool isMuted = false;
+  bool isPlay = true;
+  FullScreenPlayer({required this.controller});
+
+  void muteUnmuteCallback() {
+    isMuted = !isMuted;
+  }
+
+  void playPauseCallback() {
+    if (controller.value.isPlaying) {
+      controller.pause();
+    } else {
+      controller.play();
+    }
+    isPlay=!isPlay;
+  }
+
+  void fullScreenCallback(BuildContext context) {
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: AspectRatio(
+            aspectRatio: controller.value.aspectRatio,
+            child: Stack(children: [
+              VideoPlayer(controller),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Material(
+                    color: Colors.black38,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                              isMuted ? Icons.volume_off : Icons.volume_up),
+                          color: Colors.white,
+                          onPressed: () => muteUnmuteCallback(),
+                        ),
+                        IconButton(
+                          icon: Icon(controller.value.isPlaying
+                              ? Icons.pause
+                              : Icons.play_arrow),
+                          color: Colors.white,
+                          onPressed: () => playPauseCallback(),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.fullscreen_exit),
+                          color: Colors.white,
+                          onPressed: () => fullScreenCallback(context),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ])),
+      ),
+    );
   }
 }
