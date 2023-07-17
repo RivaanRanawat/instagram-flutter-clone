@@ -136,9 +136,26 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ],
               ),
-
             ),
-            
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "${widget.snap['title']}",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             GestureDetector(
               onDoubleTap: () {
                 FireStoreMethods().likePost(
@@ -154,12 +171,39 @@ class _PostCardState extends State<PostCard> {
                 aspectRatio: 1.5,
                 child: widget.snap['isVideo']
                     ? VideoApp(filepath: widget.snap['videoUrl'].toString())
-                    : Image.network(
-                        widget.snap['postUrl'].toString(),
-                        fit: BoxFit.cover,
+                    : GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                child: Container(
+                                   width: MediaQuery.of(context)
+                                      .size
+                                      .width, // Full width
+                                  height: MediaQuery.of(context)
+                                      .size
+                                      .height, // Full height
+                                  child: AspectRatio(
+                                    aspectRatio: 1.0,
+                                    child: Image.network(
+                                      widget.snap['postUrl'].toString(),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Image.network(
+                          widget.snap['postUrl'].toString(),
+                          fit: BoxFit.cover,
+                        ),
                       ),
               ),
             ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -206,7 +250,7 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
                 ),
-                
+
                 Text(
                   "${commentLen} comments",
                   style: TextStyle(
@@ -218,7 +262,8 @@ class _PostCardState extends State<PostCard> {
             ),
             // Description section
             Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 8.0),
+              padding: const EdgeInsets.only(
+                  left: 16.0, right: 16.0, top: 8.0, bottom: 8.0),
               child: Row(
                 children: [
                   Expanded(

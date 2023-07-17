@@ -10,8 +10,22 @@ const webScreenSize = 600;
 List<Widget> homeScreenItems = [
   const FeedScreen(),
   const SearchScreen(),
-  const AddPostScreen(),
-  const Text('notifications'),
+  // const AddPostScreen(),
+  // const Text('notifications'),
+  // StreamBuilder(
+  //     stream: FirebaseAuth.instance.authStateChanges(),
+  //     builder: (context, AsyncSnapshot<User?> snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.active) {
+  //         // if (snapshot.data!=null && snapshot.data?.uid != null) {
+  //           return ProfileScreen(
+  //             uid: snapshot.data!.uid,
+  //           );
+            
+          
+  //       // } else {
+  //       //   return Container();
+  //       // }
+  //     })
   ProfileScreen(
     uid: FirebaseAuth.instance.currentUser!.uid,
   ),

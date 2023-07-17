@@ -9,9 +9,9 @@ class VideoApp extends StatefulWidget {
 
   const VideoApp(
       {required this.filepath,
-      this.initiallyMuted = false,
+      this.initiallyMuted = true,
       this.initiallyPlaying = true,
-      this.showButtonIcons = true,
+      this.showButtonIcons = false,
       Key? key})
       : super(key: key);
 
