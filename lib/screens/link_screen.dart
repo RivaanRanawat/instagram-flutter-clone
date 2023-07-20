@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:instagram_clone_flutter/utils/colors.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LinkScreen extends StatefulWidget {
   final String linkURL;
@@ -12,12 +14,22 @@ class LinkScreen extends StatefulWidget {
 
 class _LinkScreenState extends State<LinkScreen> {
   late final WebViewController controller;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(NavigationDelegate(
+        onProgress: (int progress) {
+          if (progress == 80) {
+            setState(() {
+              isLoading = false;
+            });
+          }
+        },
+      ))
       ..loadRequest(
         Uri.parse(widget.linkURL),
       );
@@ -27,10 +39,25 @@ class _LinkScreenState extends State<LinkScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Link Screen'),
+        backgroundColor: AppBarBackgroundColor,
+        centerTitle: true,
+        title: SvgPicture.asset(
+          'assets/NEWMS_SVG.svg',
+          color: primaryColor,
+          height: 32,
+        ),
       ),
-      body: WebViewWidget(
-        controller: controller,
+      body: Stack(
+        children: [
+          WebViewWidget(
+            controller: controller,
+          ),
+          isLoading
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : SizedBox.shrink(),
+        ],
       ),
     );
   }

@@ -147,10 +147,9 @@ class _PostCardState extends State<PostCard> {
                       "${widget.snap['title']}",
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 24.0,
+                          fontSize: 18.0,
                           fontWeight: FontWeight.w600),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
+                      overflow: TextOverflow.visible,
                     ),
                   ),
                 ],
@@ -168,7 +167,7 @@ class _PostCardState extends State<PostCard> {
                 });
               },
               child: AspectRatio(
-                aspectRatio: 1.5,
+                aspectRatio: 1.0,
                 child: widget.snap['isVideo']
                     ? VideoApp(filepath: widget.snap['videoUrl'].toString())
                     : GestureDetector(

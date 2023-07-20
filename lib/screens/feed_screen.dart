@@ -68,7 +68,9 @@ class _FeedScreenState extends State<FeedScreen>
           await Future.delayed(Duration(seconds: 1));
         },
         child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+          stream: FirebaseFirestore.instance.collection('posts')
+              .orderBy('timestamp', descending: true)
+              .snapshots(),
           builder: (context,
               AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
