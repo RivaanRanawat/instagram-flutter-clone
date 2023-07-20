@@ -17,6 +17,7 @@ class _LinkScreenState extends State<LinkScreen> {
   void initState() {
     super.initState();
     controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(
         Uri.parse(widget.linkURL),
       );
