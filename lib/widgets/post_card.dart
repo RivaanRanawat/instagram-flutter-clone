@@ -180,9 +180,9 @@ class _PostCardState extends State<PostCard> {
                                    width: MediaQuery.of(context)
                                       .size
                                       .width, // Full width
-                                  height: MediaQuery.of(context)
-                                      .size
-                                      .height, // Full height
+                                  // height: MediaQuery.of(context)
+                                  //     .size
+                                  //     .height, // Full height
                                   child: AspectRatio(
                                     aspectRatio: 1.0,
                                     child: Image.network(
